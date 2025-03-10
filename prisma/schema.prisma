@@ -1,0 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../data/database.sqlite3"
+}
+
+model Task {
+  id             String   @id @default(uuid())
+  postId         String   @unique
+  post           Post     @relation(fields: [postId], references: [id])
+  socials        Social[]
+  post_timestamp DateTime
+}
+
+model Post {
+  id          String       @id @default(uuid())
+  content     String
+  attachments Attachment[]
+  task        Task?
+}
+
+model Social {
+  id     String  @id
+  type   String
+  taskId String?
+  task   Task?   @relation(fields: [taskId], references: [id])
+}
+
+model Attachment {
+  id       String  @id @default(uuid())
+  filePath String  @unique
+  postId   String?
+  post     Post?   @relation(fields: [postId], references: [id])
+}

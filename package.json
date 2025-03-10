@@ -1,0 +1,29 @@
+{
+  "name": "posting-scheduler",
+  "version": "0.0.1",
+  "description": "API for posting to multiple social networks simultaneously",
+  "keywords": [
+    "express",
+    "api",
+    "social_networks"
+  ],
+  "license": "ISC",
+  "author": "IMrProYTI",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon ./src/index.ts",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.4.1",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "nodemon": "^3.1.9",
+    "prisma": "^6.4.1",
+    "typescript": "^5.8.2"
+  }
+}
