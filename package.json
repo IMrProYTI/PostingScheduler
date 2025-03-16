@@ -12,6 +12,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
+    "start": "ts-node ./src/index.ts",
     "dev": "nodemon ./src/index.ts",
     "build": "tsc",
     "postinstall": "npx prisma generate",
@@ -19,7 +20,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.4.1",
-    "aws-sdk": "^2.1692.0",
+    "booru": "^2.7.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "multer": "^1.4.5-lts.1",
@@ -31,6 +32,7 @@
     "@types/node": "^22.13.10",
     "nodemon": "^3.1.9",
     "prisma": "^6.4.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.2"
   }
 }
