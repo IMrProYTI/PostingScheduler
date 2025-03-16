@@ -36,8 +36,8 @@ model Social {
 }
 
 model Attachment {
-  id       String  @id @default(uuid())
-  filePath String  @unique
-  postId   String?
-  post     Post?   @relation(fields: [postId], references: [id])
+  id      String  @id @default(uuid())
+  fileURL String  @unique
+  postId  String?
+  post    Post?   @relation(fields: [postId], references: [id])
 }
