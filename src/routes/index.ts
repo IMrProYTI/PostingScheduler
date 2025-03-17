@@ -3,7 +3,7 @@ import { Router } from 'express';
 
 const route = Router();
 
-import booru from './booru.get';
+import booru from './booru';
 route.use('/booru', booru);
 
 
