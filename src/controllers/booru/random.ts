@@ -13,13 +13,21 @@ export default async (req: Request, res: Response) => {
 	}
 
 	const tags = [];
-	for (const tag of result.data!)
-		if (tag.includes('+'))
-			tags.push(...tag.split('+'));
+	if (typeof result.data === 'string')
+		if (result.data.includes('+'))
+			tags.push(...result.data.split('+'));
 		else
-			tags.push(tag);
+			tags.push(result.data);
+	else
+		for (const tag of result.data!)
+			if (tag.includes('+'))
+				tags.push(...tag.split('+'));
+			else
+				tags.push(tag);
 
-	const post = booru.getRandom(tags);
+
+	const post = await booru.getRandom(tags);
+	console.log(typeof post, post)
 
 	res.status(200).send(await post);
 	return;
