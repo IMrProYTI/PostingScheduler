@@ -1,13 +1,12 @@
 import { Router } from 'express';
+import BooruController from '../controllers/booru';
 
 
 const route = Router();
 
-import random from '../controllers/booru/random';
-route.get('/random', random);
+route.get('/random', BooruController.random);
 
-import current from '../controllers/booru/current';
-route.get('/:id', current);
+route.get('/:id', BooruController.get);
 
 
 export default route;

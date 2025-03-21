@@ -1,6 +1,6 @@
 {
   "name": "posting-scheduler",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "API for posting to multiple social networks simultaneously",
   "keywords": [
     "express",
@@ -15,7 +15,7 @@
     "start": "ts-node ./src/index.ts",
     "dev": "nodemon ./src/index.ts",
     "build": "tsc",
-    "postinstall": "npx prisma generate",
+    "postinstall": "prisma generate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

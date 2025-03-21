@@ -1,18 +1,18 @@
 import { Request, Response } from "express";
 
-import booru from "../../services/booru";
-import booruTags from "../../schemas/booruTags";
+import schema from "../../schemas/database/post";
+import { createPost } from "../../services/post";
 
 
 export default async (req: Request, res: Response) => {
-	const result = booruTags.safeParse(req.query.tags);
+	const result = schema.safeParse(req.body);
 
 	if (!result.success) {
 		res.sendStatus(400);
 		return;
 	}
 
-	const post = booru.getRandom(result.data);
+	const post = createPost(result.data);
 
 	res.status(200).send(await post);
 	return;

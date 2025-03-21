@@ -1,9 +1,11 @@
 import { z } from "zod";
 
+import uuid from "../base/uuid";
+
 
 const schema = z.object({
-	id: z.string().uuid(),
-	fileURL: z.string()
+	id: uuid.optional(),
+	type: z.string()
 });
 
 
