@@ -19,7 +19,7 @@ class BooruService {
 	}
 
 	async getRandom(tags: string | string[] = []) {
-		return (await this.BooruApp.search(tags, { random: true }))[0];
+		return await this.BooruApp.search(tags, { random: true });
 	}
 
 	private getPostURL(id: string | number) {
