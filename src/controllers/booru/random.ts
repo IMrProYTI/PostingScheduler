@@ -14,7 +14,8 @@ export default async (req: Request, res: Response) => {
 
 	const tags = [];
 	for (const tag of result.data!)
-		tags.push(...tag.split('+'));
+		if (tag.includes('+'))
+			tags.push(...tag.split('+'));
 
 	const post = booru.getRandom(tags);
 
