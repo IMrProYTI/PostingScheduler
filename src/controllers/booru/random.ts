@@ -25,9 +25,7 @@ export default async (req: Request, res: Response) => {
 			else
 				tags.push(tag);
 
-
 	const post = await booru.getRandom(tags);
-	console.log(typeof post, post)
 
 	res.status(200).send(await post);
 	return;
