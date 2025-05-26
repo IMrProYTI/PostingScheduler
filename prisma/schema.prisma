@@ -26,6 +26,7 @@ model Post {
   content     String
   attachments Attachment[]
   task        Task?
+  type        PostType
 }
 
 model Social {
@@ -37,7 +38,19 @@ model Social {
 
 model Attachment {
   id      String  @id @default(uuid())
-  fileURL String  @unique
+  path    String  @unique
   postId  String?
   post    Post?   @relation(fields: [postId], references: [id])
+  type    AttachmentType
+}
+
+enum PostType {
+  Default
+  Suggestion
+  Draft
+}
+
+enum AttachmentType {
+  External
+  Local
 }

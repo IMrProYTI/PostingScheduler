@@ -1,13 +1,15 @@
 import { Request, Response } from "express";
+import logger from "../../shared/logger";
 
-import schema from "../../schemas/database/task";
+import { taskCreate } from "../../schemas/database/task";
 import { createTask } from "../../services/task";
 
 
 export default async (req: Request, res: Response) => {
-	const result = schema.safeParse(req.body);
+	const result = taskCreate.safeParse(req.body);
 
 	if (!result.success) {
+		logger.warn(result.error);
 		res.sendStatus(400);
 		return;
 	}

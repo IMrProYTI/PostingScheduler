@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
+import { z } from "zod";
 
 import booru from "../../services/booru";
-import schemaUUID from "../../schemas/base/uuid";
 
 
 export default async (req: Request, res: Response) => {
-	const result = schemaUUID.safeParse(req.params.id);
+	const result = z.coerce.number().safeParse(req.params.id)
 
 	if (!result.success) {
 		res.sendStatus(400);

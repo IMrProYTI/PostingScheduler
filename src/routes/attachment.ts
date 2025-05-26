@@ -1,16 +1,18 @@
 import { Router } from "express";
-import AttachmentController from '../controllers/attachment';
+import { attachment } from "../controllers";
 
 
 const route = Router();
 
-route.get('/:id', AttachmentController.get);
+route.get('/', attachment.getAll);
 
-route.post('/', AttachmentController.create);
+route.get('/:id', attachment.get);
 
-route.put('/:id', AttachmentController.update);
+route.post('/', attachment.create);
 
-route.delete('/:id', AttachmentController.del);
+// route.put('/:id', attachment.update);
+
+route.delete('/:id', attachment.delete);
 
 
 export default route;

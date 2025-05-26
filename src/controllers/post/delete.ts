@@ -1,19 +1,21 @@
 import { Request, Response } from "express";
+import logger from "../../shared/logger";
 
 import schemaUUID from "../../schemas/base/uuid";
 import { deletePost } from "../../services/post";
 
 
 export default async (req: Request, res: Response) => {
-	const resultUUID = schemaUUID.safeParse(req.params.id);
+	const result = schemaUUID.safeParse(req.params.id);
 
-	if (!resultUUID.success) {
+	if (!result.success) {
+		logger.warn(result.error);
 		res.sendStatus(400);
 		return;
 	}
 
-	deletePost(resultUUID.data);
+	const post = deletePost(result.data);
 
-	res.status(202).send({ id: resultUUID.data });
+	res.status(200).send(await post);
 	return;
 }

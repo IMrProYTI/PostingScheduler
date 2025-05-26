@@ -1,16 +1,16 @@
 import { Router } from 'express';
-import PostController from '../controllers/post';
+import { post } from '../controllers';
 
 
 const route = Router();
 
-route.get('/:id', PostController.get);
+route.get('/:id', post.get);
 
-route.post('/', PostController.create);
+route.post('/', post.create);
 
-route.put('/', PostController.update);
+route.put('/:id', post.update);
 
-route.delete('/', PostController.del);
+route.delete('/:id', post.delete);
 
 
 export default route;
