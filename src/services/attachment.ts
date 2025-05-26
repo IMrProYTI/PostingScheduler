@@ -1,31 +1,51 @@
-import prisma, { Prisma } from "../config/prisma";
-import { z } from "zod";
+import prisma from "../config/prisma";
 
-import schema from "../schemas/database/attachment";
+import { attachmentCreateType, attachmentUpdateType } from "../schemas/database/attachment";
 import { createAttachmentInput, updateAttachmentInput } from "../maps/attachment";
 
+const selectFields = {
+	path: true,
+	type: true
+}
+
+
+export const getAllAttachments = async () => {
+	return await prisma.attachment.findMany({
+		select: {
+			id: true,
+			...selectFields
+		}
+	});
+}
 
 export const getFirstAttachment = async (id: string) => {
 	return await prisma.attachment.findFirst({
-		where: { id }
+		where: { id },
+		select: selectFields
 	});
 }
 
-export const createAttachment = async (data: z.infer<typeof schema>) => {
+export const createAttachment = async (data: attachmentCreateType) => {
 	return await prisma.attachment.create({
-		data: createAttachmentInput(data)
+		data: createAttachmentInput(data),
+		select: {
+			id: true,
+			...selectFields
+		}
 	});
 }
 
-export const updateAttachment = async (id: string, data: z.infer<typeof schema>) => {
+export const updateAttachment = async (id: string, data: attachmentUpdateType) => {
 	return await prisma.attachment.update({
 		where: { id },
-		data: updateAttachmentInput(data)
+		data: updateAttachmentInput(data),
+		select: selectFields
 	});
 }
 
 export const deleteAttachment = async (id: string) => {
 	return await prisma.attachment.delete({
-		where: { id }
+		where: { id },
+		select: { id: true }
 	});
 }
