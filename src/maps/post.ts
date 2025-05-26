@@ -1,31 +1,55 @@
 import { Prisma } from "../config/prisma";
-import { z } from "zod";
 
-import schema from "../schemas/database/post";
-import { createAttachmentInput } from "./attachment";
+import { createAttachmentInput, updateAttachmentInput } from "./attachment";
+import type { postCreateType, postUpdateType } from "../schemas/database/post";
+import type { attachmentCreateType, attachmentConnectType, attachmentUpdateType } from "../schemas/database/attachment";
+import logger from "../shared/logger";
 
 
-export const createPostInput = (data: z.infer<typeof schema>): Prisma.PostCreateInput => {
+function filter(obj: any, fields: any[], extraCondition: boolean = false): boolean {
+if (Object.keys(obj).length === fields.length || extraCondition) {
+		for (const field of fields)
+			if (!(field in obj))
+				return false;
+		return true;
+	}
+	return false;
+}
+
+
+export const createPostInput = (data: postCreateType): Prisma.PostCreateInput => {
 	return {
-		attachments: data.attachments ? {
-			connect: data.attachments.map(({ id }) => ({ id })),
-			create: data.attachments.map((el) => createAttachmentInput(el))
-		} : undefined,
-		content: data.content
+		...data,
+		attachments: {
+			create: data.attachments
+				.filter((el): el is attachmentCreateType => filter(el, ['path', 'type']))
+				.map((el) => createAttachmentInput(el)),
+			connect: data.attachments
+				.filter((el): el is attachmentConnectType => filter(el, ['id']))
+				.map((el) => ({ id: el.id }))
+		}
 	}
 }
 
-const optionalSchema = schema.deepPartial();
-export const updatePostInput = (data: z.infer<typeof optionalSchema>): Prisma.PostUpdateInput => {
+export const updatePostInput = (data: postUpdateType): Prisma.PostUpdateInput => {
 	return {
-		attachments: data.attachments ? {
-			connect: data.attachments
-				.filter(({ id }) => (id))
-				.map(({ id }) => ({ id: id! })),
-			create: data.attachments
-				.filter(({ fileURL }) => (fileURL))
-				.map(({ fileURL }) => createAttachmentInput({ fileURL: fileURL! }))
-		} : undefined,
-		content: data.content
+		...data,
+		attachments: {
+			create: data.attachments ?
+				data.attachments
+					.filter((el): el is attachmentCreateType => filter(el, ['path', 'type']))
+					.map((el) => createAttachmentInput(el))
+				: undefined,
+			connect: data.attachments ?
+				data.attachments
+					.filter((el): el is attachmentConnectType => filter(el, ['id']))
+					.map((el) => ({ id: el.id }))
+				: undefined,
+		// 	update: data.attachments ?
+		// 		data.attachments
+		// 			.filter((el): el is attachmentUpdateType => filter(el, ['id'], Object.keys(el).length > 1))
+		// 			.map((el) => el)
+		// 		: undefined,
+		}
 	}
 }

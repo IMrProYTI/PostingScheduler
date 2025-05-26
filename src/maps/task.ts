@@ -1,40 +1,38 @@
 import { Prisma } from "../config/prisma";
 import { z } from "zod";
 
-import schema from "../schemas/database/task";
 import { createPostInput } from "./post";
-import { createSocialInput } from "./socials";
+import type { postCreateType } from "../schemas/database/post";
+import type { socialConnectType } from "../schemas/database/social";
+import type { taskCreateType, taskUpdateType } from "../schemas/database/task";
 
 
-export const createTaskInput = (data: z.infer<typeof schema>): Prisma.TaskCreateInput => {
+export const createTaskInput = (data: taskCreateType): Prisma.TaskCreateInput => {
 	return {
+		...data,
 		post: {
-			connect: { id: data.post.id },
-			create: createPostInput(data.post),
+			connect: 'id' in data.post ? { id: data.post.id } : undefined,
+			create: !('id' in data.post) ? createPostInput(data.post) : undefined,
 		},
-		post_timestamp: data.post_timestamp,
 		socials: {
-			connect: data.socials.map(({ id }) => ({ id })),
-			create: data.socials.map((el) => createSocialInput(el))
+			connect: data.socials.map(({ id }) => ({ id }))
 		}
 	}
 }
 
-const optionalSchema = schema.deepPartial();
-export const updateTaskInput = (data: z.infer<typeof optionalSchema>): Prisma.TaskUpdateInput => {
+export const updateTaskInput = (data: taskUpdateType): Prisma.TaskUpdateInput => {
 	return {
+		...data,
 		post: {
-			connect: data.post?.id ? { id: data.post.id } : undefined,
-			create: data.post?.content ? createPostInput({ content: data.post.content }) : undefined,
+			connect: 'id' in data.post! ? { id: data.post.id as string } : undefined,
+			create: !('id' in data.post!) ? createPostInput(data.post as postCreateType) : undefined,
 		},
-		post_timestamp: data.post_timestamp,
 		socials: {
-			connect: data.socials
-				?.filter(({ id }) => (id))
-				.map(({ id }) => ({ id: id! })),
-			create: data.socials
-				?.filter(({ type }) => (type))
-				.map(({ type }) => createSocialInput({ type: type! }))
+			connect: data.socials ?
+				data.socials
+					.filter((el) => 'id' in el)
+					.map((el) => ({ id: el.id }))
+				: undefined,
 		}
 	}
 }

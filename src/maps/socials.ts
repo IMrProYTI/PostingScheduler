@@ -1,14 +1,12 @@
 import { Prisma } from "../config/prisma";
-import { z } from "zod";
 
-import schema from "../schemas/database/social";
+import type { socialCreateType, socialUpdateType } from "../schemas/database/social";
 
 
-export const createSocialInput = (data: z.infer<typeof schema>): Prisma.SocialCreateInput => {
-	return { type: data.type }
+export const createSocialInput = (data: socialCreateType): Prisma.SocialCreateInput => {
+	return { ...data }
 }
 
-// const optionalSchema = schema.partial();
-// export const updateAttachmentInput = (data: z.infer<typeof optionalSchema>): Prisma.SocialUpdateInput => {
-// 	return {  }
-// }
+export const updateSocialInput = (data: socialUpdateType): Prisma.SocialUpdateInput => {
+	return { ...data }
+}
