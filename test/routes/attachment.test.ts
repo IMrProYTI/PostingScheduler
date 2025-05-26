@@ -37,57 +37,68 @@ describe('Route Attachments', () => {
     type: string
 	}
 
-	const createdAttachments = [] as Promise<baseJson>[];
+	const attachmentVariants = [
+		{
+			'path': "/path/to/local/path",
+			'type': AttachmentType.Local
+		},
+		{
+			'path': "http://path.to/External/path",
+			'type': AttachmentType.External
+		}
+	]
 
-	it('Create Attachment', async () => {
-		[
-			{
-				'path': "/path/to/local/path",
-				'type': AttachmentType.Local
-			},
-			{
-				'path': "http://path.to/External/path",
-				'type': AttachmentType.External
-			}
-		]
-		.map(async (body) => {
-			const response = fetch(`${config.url}/attachment`, {
-				...options,
-				method: methods.POST,
-				body: JSON.stringify(body)
+	const attachments = new Promise<baseJson[]>(async (resolve) => {
+		it('Create Atachment', async () => {
+			const temp = [] as baseJson[];
+
+			attachmentVariants.forEach(async (variant) => {
+				const response = fetch(`${config.url}/attachment`, {
+					...options,
+					method: methods.POST,
+					body: JSON.stringify(variant)
+				})
+			
+				const resJson: Promise<baseJson> = (await response).json();
+	
+				expect((await response).ok).toBeTruthy();
+				expect((await response).status).toBe(201);
+	
+				checkPropertys(await resJson, ['id','path','type']);
+				expect((await resJson).path).toBe(variant.path);
+				expect((await resJson).type).toBe(variant.type);
+	
+				temp.push(await	resJson);
 			})
-			
-			const resJson: Promise<baseJson> = (await response).json();
-			
-			createdAttachments.push(resJson);
 
-			expect((await response).ok).toBeTruthy();
-			expect((await response).status).toBe(201);
-
-			checkPropertys(await resJson, ['id','path','type']);
-			expect((await resJson).path).toBe(body.path);
-			expect((await resJson).type).toBe(body.type);
+			resolve(temp);
 		})
 	})
 
-	it('Get Attachment', async () => {
-		createdAttachments.map(async (attachment) => {
-			const response = fetch(`${config.url}/attachment/${(await attachment).id}`, options);
+	const allAttachments = new Promise<baseJson[]>((resolve) => {
+		it('Get Attachment', async () => {
+			(await attachments).map(async (attachment) => {
+				const response = fetch(`${config.url}/attachment/${attachment.id}`, options);
+	
+				expect((await response).ok).toBeTruthy();
+				expect((await response).status).toBe(200);
+	
+				const resJson: Promise<Omit<baseJson, 'id'>> = (await response).json();
+	
+				checkPropertys(await resJson, ['path','type']);
+				expect((await resJson).path).toBe(attachment.path);
+				expect((await resJson).type).toBe(attachment.type);
 
-			expect((await response).ok).toBeTruthy();
-			expect((await response).status).toBe(200);
+				return (await resJson);
+			})
 
-			const resJson: Promise<Omit<baseJson, 'id'>> = (await response).json();
-
-			checkPropertys(await resJson, ['path','type']);
-			expect((await resJson).path).toBe((await attachment).path);
-			expect((await resJson).type).toBe((await attachment).type);
+			resolve(Promise.all(await attachments));
 		})
 	})
 
 	const isComplete = new Promise<void>((resolve) => {
 		it('Get All Attachments', async () => {
-			await Promise.all(createdAttachments);
+			await allAttachments;
 
 			const response = fetch(`${config.url}/attachment`, {
 				...options,
@@ -111,8 +122,8 @@ describe('Route Attachments', () => {
 	it('Delete Attachment', async () => {
 		await isComplete;
 
-		createdAttachments.map(async (attachment) => {
-			const response = fetch(`${config.url}/attachment/${(await attachment).id}`, {
+		(await attachments).map(async (attachment) => {
+			const response = fetch(`${config.url}/attachment/${attachment.id}`, {
 				...options,
 				method: methods.DELETE
 			})
@@ -122,10 +133,8 @@ describe('Route Attachments', () => {
 
 			const resJson: Promise<{ id: string }> = (await response).json();
 
-			resJson.then((value) => console.log(JSON.stringify(value)));
-
 			expect((await resJson)).toHaveProperty('id');
-			expect((await resJson).id).toBe((await attachment).id);
+			expect((await resJson).id).toBe(attachment.id);
 		})
 	})
 })
